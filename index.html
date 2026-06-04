@@ -728,7 +728,7 @@ async function renderFatChart(){
       datasets:[{data:[Math.round(osTotal),Math.round(finTotal)],backgroundColor:['#D4A853','#2D7DD2'],borderWidth:0,borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'bottom',labels:{color:tickColor,font:{size:11},boxWidth:12}},
-        tooltip:{callbacks:{label:c=>c.label+': '+fmt(c.raw)+' ('+(c.raw/(osTotal+finTotal||1)*100).toFixed(1)+'%)'}}}}}
+        tooltip:{callbacks:{label:function(c){var total=osTotal+finTotal||1;return c.label+': '+fmt(c.raw)+' ('+((c.raw/total)*100).toFixed(1)+'%)';}}}}}
   });
   // Grafico de barras horizontais: top orgaos
   const orgMap={};
