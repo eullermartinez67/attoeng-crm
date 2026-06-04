@@ -10,6 +10,23 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--dark:#0D1117;--dark2:#161B22;--dark3:#21262D;--line:#30363D;--line2:#484F58;--txt:#E6EDF3;--txt2:#8B949E;--txt3:#484F58;--gold:#D4A853;--gold2:#F0C866;--gold-dim:#2A2015;--blue:#2D7DD2;--blue2:#4A9EF0;--blue-dim:#0D1F38;--green:#3FB950;--green-dim:#0D2818;--red:#F85149;--red-dim:#2C0A09;--amber:#E3B341;--amber-dim:#2E2006}
 body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);background:var(--dark);height:100vh;overflow:hidden;display:flex}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;align-items:center;justify-content:center}
+.login-box{width:380px;max-width:94vw}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-circle{width:72px;height:72px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--gold);margin-bottom:12px}
+.login-brand{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--gold)}
+.login-sub{font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.login-card{background:var(--dark2);border:1px solid var(--line);border-radius:14px;padding:28px 28px 24px}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--txt);margin-bottom:20px;text-align:center}
+.login-fg{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.login-fg label{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;font-weight:500}
+.login-fg input{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--dark3);color:var(--txt);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border .14s}
+.login-fg input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:11px;border:none;border-radius:8px;background:var(--gold);color:var(--dark);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:6px;transition:background .14s}
+.login-btn:hover{background:var(--gold2)}
+.login-err{color:var(--red);font-size:11px;text-align:center;margin-top:10px;min-height:16px}
+.login-footer{text-align:center;margin-top:16px;font-size:10px;color:var(--txt3)}
 .rail{width:230px;min-width:230px;background:var(--dark2);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100vh}
 .rail-top{border-bottom:1px solid var(--line)}
 .brand-block{padding:16px 16px 12px;display:flex;align-items:center;gap:11px}
@@ -129,6 +146,34 @@ body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);background
 </style>
 </head>
 <body>
+
+<!-- TELA DE LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-circle">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:#111;text-align:center;line-height:1">ATTO<div style="font-size:7px;letter-spacing:1.5px;color:#666;margin-top:1px">ENGENHARIA</div></div>
+      </div>
+      <div class="login-brand">ATTO Engenharia</div>
+      <div class="login-sub">Sistema de Gestão — CRM</div>
+    </div>
+    <div class="login-card">
+      <div class="login-title">Acesso Restrito</div>
+      <div class="login-fg">
+        <label>Usuário</label>
+        <input id="l-user" type="text" placeholder="euler" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()"/>
+      </div>
+      <div class="login-fg">
+        <label>Senha</label>
+        <input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Entrar no Sistema</button>
+      <div class="login-err" id="login-err"></div>
+    </div>
+    <div class="login-footer">Eng. Euler J. G. Martinez · CREA 62.825-D/MS</div>
+  </div>
+</div>
+
 <nav class="rail">
   <div class="rail-top">
     <div class="brand-block">
@@ -807,7 +852,34 @@ async function sendIA(){
   }
   msgs.scrollTop=msgs.scrollHeight;
 }
-loadDash();
+
+/* ── LOGIN ── */
+const USERS={'euler':'atto2025','atto':'engenharia2025'};
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const p=document.getElementById('l-pass').value;
+  const err=document.getElementById('login-err');
+  if(!u||!p){err.textContent='Preencha usuario e senha.';return;}
+  if(USERS[u]&&USERS[u]===p){
+    sessionStorage.setItem('atto_auth','1');
+    document.getElementById('login-screen').style.display='none';
+    loadDash();
+  } else {
+    err.textContent='Usuario ou senha incorretos.';
+    document.getElementById('l-pass').value='';
+    document.getElementById('l-pass').focus();
+    setTimeout(()=>err.textContent='',3000);
+  }
+}
+function checkAuth(){
+  if(sessionStorage.getItem('atto_auth')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    loadDash();
+  } else {
+    setTimeout(()=>document.getElementById('l-user').focus(),200);
+  }
+}
+checkAuth();
 </script>
 </body>
 </html>
