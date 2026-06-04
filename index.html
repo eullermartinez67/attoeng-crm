@@ -577,7 +577,7 @@ function filterOS(){
       <td style="font-size:11px;color:var(--txt3)">${fmtD(o.data_recebimento)}</td>
       <td>
         <button class="btn btn-sm" onclick="editOS(${o.id})" title="Editar"><i class="ti ti-edit"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="confirmDelOS(${o.id},'${(o.os_numero||'OS').replace(/'/g,'\\\'')}')" title="Excluir"><i class="ti ti-trash"></i></button>
+        <button class="btn btn-sm btn-danger" data-id="${o.id}" data-num="${(o.os_numero||'OS').replace(/"/g,'&quot;')}" onclick="confirmDelOS(this.dataset.id,this.dataset.num)" title="Excluir"><i class="ti ti-trash"></i></button>
       </td>
     </tr>`;
   }).join('')||'<tr><td colspan="10" class="loading">Nenhuma OS encontrada</td></tr>';
