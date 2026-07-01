@@ -610,10 +610,20 @@ const PR={Alta:'p-red',Media:'p-amber',Baixa:'p-gray'};
 const METODO_COLOR={Comparativo:'p-blue',Evolutivo:'p-gold',Involutivo:'p-red'};
 const TIPO_COLOR={Comercial:'p-amber',Residencial:'p-green',Terreno:'p-gray'};
 const OS_STATUS_COLOR={'Em andamento':'p-amber','Atrasado':'p-red','Concluido':'p-green'};
+function normStatus(s){
+  s=(s||'').trim();
+  if(!s)return 'Em andamento';
+  const noacc=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(noacc==='concluido'||noacc==='concluida')return 'Concluido';
+  if(noacc==='atrasado'||noacc==='atrasada')return 'Atrasado';
+  if(noacc==='em andamento')return 'Em andamento';
+  return s;
+}
 function computeStatus(o){
-  if(o.status==='Concluido')return 'Concluido';
+  const s=normStatus(o.status);
+  if(s==='Concluido')return 'Concluido';
   if(o.prazo){const hoje=new Date().toISOString().slice(0,10);if(o.prazo<hoje)return 'Atrasado';}
-  return o.status||'Em andamento';
+  return s;
 }
 const fmt=v=>'R$\u2009'+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
 const fmtD=v=>v?new Date(v+'T12:00:00').toLocaleDateString('pt-BR'):'--';
