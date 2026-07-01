@@ -147,9 +147,6 @@ body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);background
 .filter-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
 .filter-row select{padding:6px 10px;border:1px solid var(--line);border-radius:7px;background:var(--dark2);color:var(--txt);font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
 .filter-row select:focus{border-color:var(--gold)}
-.os-tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--txt2);font-family:'DM Sans',sans-serif;font-size:12.5px;padding:8px 18px;cursor:pointer;margin-bottom:-1px;display:inline-flex;align-items:center;gap:6px;transition:all .14s}
-.os-tab-btn:hover{color:var(--txt)}
-.os-tab-btn.os-tab-on{color:var(--gold2);border-bottom:2px solid var(--gold)}
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:110}
 .confirm-box{background:var(--dark2);border:1px solid var(--line);border-radius:12px;padding:22px 24px;width:380px;max-width:94vw}
 .confirm-box .cm-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--red);margin-bottom:10px}
@@ -300,66 +297,28 @@ body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);background
 
     <!-- ORDENS DE SERVICO -->
     <div class="sc" id="sc-os">
-      <!-- Sub-abas -->
-      <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--line)">
-        <button id="os-tab-lista" class="os-tab-btn os-tab-on" onclick="osTab('lista')"><i class="ti ti-list"></i> Lista de OS</button>
-        <button id="os-tab-chart" class="os-tab-btn" onclick="osTab('chart')"><i class="ti ti-chart-bar"></i> Faturamento Mensal</button>
+      <!-- Cards de totais -->
+      <div class="g3" id="os-cards">
+        <div class="card"><div class="hf-lbl">Total OS (filtrado)</div><div class="hf-val" style="color:var(--gold2)" id="os-total-n">-</div></div>
+        <div class="card"><div class="hf-lbl">Faturamento bruto</div><div class="hf-val" style="color:var(--blue2);font-size:18px" id="os-fat">-</div></div>
+        <div class="card"><div class="hf-lbl">Lucro liquido</div><div class="hf-val" style="color:var(--green);font-size:18px" id="os-luc">-</div></div>
       </div>
-
-      <!-- PAINEL: LISTA -->
-      <div id="os-panel-lista">
-        <!-- Cards de totais -->
-        <div class="g3" id="os-cards">
-          <div class="card"><div class="hf-lbl">Total OS (filtrado)</div><div class="hf-val" style="color:var(--gold2)" id="os-total-n">-</div></div>
-          <div class="card"><div class="hf-lbl">Faturamento bruto</div><div class="hf-val" style="color:var(--blue2);font-size:18px" id="os-fat">-</div></div>
-          <div class="card"><div class="hf-lbl">Lucro liquido</div><div class="hf-val" style="color:var(--green);font-size:18px" id="os-luc">-</div></div>
+      <!-- Filtros -->
+      <div class="filter-row">
+        <i class="ti ti-filter" style="color:var(--txt3)"></i>
+        <select id="os-fil-orgao" onchange="filterOS()"><option value="">Todos os orgaos</option></select>
+        <select id="os-fil-ano" onchange="filterOS()"><option value="">Todos os anos</option></select>
+        <div class="srch" style="flex:1;margin:0">
+          <i class="ti ti-search"></i>
+          <input id="os-search" placeholder="Buscar por OS, cidade, endereco..." oninput="filterOS()"/>
         </div>
-        <!-- Filtros -->
-        <div class="filter-row">
-          <i class="ti ti-filter" style="color:var(--txt3)"></i>
-          <select id="os-fil-orgao" onchange="filterOS()"><option value="">Todos os orgaos</option></select>
-          <select id="os-fil-ano" onchange="filterOS()"><option value="">Todos os anos</option></select>
-          <div class="srch" style="flex:1;margin:0">
-            <i class="ti ti-search"></i>
-            <input id="os-search" placeholder="Buscar por OS, cidade, endereco..." oninput="filterOS()"/>
-          </div>
-          <button class="btn" onclick="exportOSExcel()" title="Exportar para Excel"><i class="ti ti-file-spreadsheet"></i> Excel</button>
-        </div>
-        <div class="card">
-          <table class="tbl" id="os-tbl">
-            <thead><tr><th>OS Nº</th><th>Orgao / Cidade</th><th>Data</th><th>Prazo</th><th>Status</th><th>Valor OS</th><th>Lucro Liq.</th><th style="width:76px"></th></tr></thead>
-            <tbody id="os-body"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
-          </table>
-        </div>
+        <button class="btn" onclick="exportOSExcel()" title="Exportar para Excel"><i class="ti ti-file-spreadsheet"></i> Excel</button>
       </div>
-
-      <!-- PAINEL: GRAFICO -->
-      <div id="os-panel-chart" style="display:none">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
-          <div class="card"><div class="hf-lbl">Faturado no ano</div><div class="hf-val" style="color:var(--gold2);font-size:18px" id="ch-ano-val">-</div></div>
-          <div class="card"><div class="hf-lbl">Melhor mes</div><div class="hf-val" style="color:var(--blue2);font-size:16px" id="ch-melhor">-</div></div>
-          <div class="card"><div class="hf-lbl">Media mensal</div><div class="hf-val" style="color:var(--green);font-size:18px" id="ch-media">-</div></div>
-          <div class="card"><div class="hf-lbl">Lucro medio/mes</div><div class="hf-val" style="color:var(--amber);font-size:18px" id="ch-luc-media">-</div></div>
-        </div>
-        <div class="card" style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <div class="c-head" style="margin:0">Faturamento mensal (OS + Financeiro)</div>
-            <select id="ch-ano-sel" onchange="renderFatChart()" style="padding:5px 10px;border:1px solid var(--line);border-radius:7px;background:var(--dark3);color:var(--txt);font-size:12px;font-family:'DM Sans',sans-serif">
-              <option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
-            </select>
-          </div>
-          <canvas id="fat-chart" height="220"></canvas>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="card">
-            <div class="c-head">Distribuicao por fonte</div>
-            <canvas id="fonte-chart" height="200"></canvas>
-          </div>
-          <div class="card">
-            <div class="c-head">Top orgaos (valor OS)</div>
-            <canvas id="orgao-chart" height="200"></canvas>
-          </div>
-        </div>
+      <div class="card">
+        <table class="tbl" id="os-tbl">
+          <thead><tr><th>OS Nº</th><th>Orgao / Cidade</th><th>Data</th><th>Prazo</th><th>Status</th><th>Valor OS</th><th>Lucro Liq.</th><th style="width:76px"></th></tr></thead>
+          <tbody id="os-body"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
+        </table>
       </div>
     </div>
 
@@ -595,7 +554,6 @@ body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);background
 </div>
 
 <div class="toast-el" id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const SB='https://orvkgbkbawqhbzamlxpb.supabase.co';
@@ -818,91 +776,6 @@ function exportOSExcel(){
   toast('Excel exportado! '+rows.length+' OS.');
 }
 
-/* ── ABAS OS ── */
-function osTab(t){
-  document.querySelectorAll('.os-tab-btn').forEach(b=>b.classList.remove('os-tab-on'));
-  document.getElementById('os-tab-'+t).classList.add('os-tab-on');
-  document.getElementById('os-panel-lista').style.display=t==='lista'?'block':'none';
-  document.getElementById('os-panel-chart').style.display=t==='chart'?'block':'none';
-  if(t==='chart')renderFatChart();
-}
-
-/* ── GRAFICOS FATURAMENTO ── */
-let fatChartInst=null,fonteChartInst=null,orgaoChartInst=null;
-async function renderFatChart(){
-  const year=parseInt(document.getElementById('ch-ano-sel').value);
-  const fin=await sGet('financeiro').catch(()=>[]);
-  const os=allOS;
-  const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const osM=new Array(12).fill(0),finM=new Array(12).fill(0),lucM=new Array(12).fill(0);
-  os.forEach(o=>{
-    if(!o.data_viagem)return;
-    const d=new Date(o.data_viagem+'T12:00:00');
-    if(d.getFullYear()!==year)return;
-    const m=d.getMonth();
-    osM[m]+=Number(o.valor_os||0);
-    lucM[m]+=Number(o.lucro_liquido||0);
-  });
-  (fin||[]).forEach(f=>{
-    if(!f.data)return;
-    const d=new Date(f.data+'T12:00:00');
-    if(d.getFullYear()!==year)return;
-    if(f.tipo==='Receita')finM[d.getMonth()]+=Number(f.valor||0);
-  });
-  const totMes=osM.map((v,i)=>v+finM[i]);
-  const totalAno=totMes.reduce((a,b)=>a+b,0);
-  const maxMesVal=Math.max(...totMes);
-  const maxMesIdx=totMes.indexOf(maxMesVal);
-  const mediaAno=totalAno/12;
-  const lucTotal=lucM.reduce((a,b)=>a+b,0);
-  document.getElementById('ch-ano-val').textContent=fmt(totalAno);
-  document.getElementById('ch-melhor').textContent=meses[maxMesIdx]+': '+fmt(maxMesVal);
-  document.getElementById('ch-media').textContent=fmt(mediaAno);
-  document.getElementById('ch-luc-media').textContent=fmt(lucTotal/12);
-  const gridColor='rgba(255,255,255,.07)';
-  const tickColor='#8B949E';
-  if(fatChartInst)fatChartInst.destroy();
-  fatChartInst=new Chart(document.getElementById('fat-chart').getContext('2d'),{
-    type:'bar',
-    data:{labels:meses,datasets:[
-      {label:'OS',data:osM,backgroundColor:'#D4A853',borderRadius:4,borderSkipped:false},
-      {label:'Financeiro',data:finM,backgroundColor:'#2D7DD2',borderRadius:4,borderSkipped:false},
-      {label:'Lucro Liq.',data:lucM,type:'line',borderColor:'#3FB950',backgroundColor:'rgba(63,185,80,.12)',borderWidth:2,pointRadius:3,fill:true,tension:.3,yAxisID:'y'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:tickColor,font:{size:11},boxWidth:12}},
-        tooltip:{callbacks:{label:c=>(c.dataset.label||'')+': '+fmt(c.raw)}}},
-      scales:{
-        x:{stacked:true,grid:{color:gridColor},ticks:{color:tickColor,font:{size:11}}},
-        y:{stacked:true,grid:{color:gridColor},ticks:{color:tickColor,font:{size:11},callback:v=>fmt(v)},beginAtZero:true}
-      }}
-  });
-  // Grafico de rosca: fonte
-  const osTotal=os.reduce((s,o)=>s+Number(o.valor_os||0),0);
-  const finTotal=(fin||[]).filter(f=>f.tipo==='Receita').reduce((s,f)=>s+Number(f.valor||0),0);
-  if(fonteChartInst)fonteChartInst.destroy();
-  fonteChartInst=new Chart(document.getElementById('fonte-chart').getContext('2d'),{
-    type:'doughnut',
-    data:{labels:['Ordens de Servico','Lancamentos Financeiros'],
-      datasets:[{data:[Math.round(osTotal),Math.round(finTotal)],backgroundColor:['#D4A853','#2D7DD2'],borderWidth:0,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{color:tickColor,font:{size:11},boxWidth:12}},
-        tooltip:{callbacks:{label:function(c){var total=osTotal+finTotal||1;return c.label+': '+fmt(c.raw)+' ('+((c.raw/total)*100).toFixed(1)+'%)';}}}}}
-  });
-  // Grafico de barras horizontais: top orgaos
-  const orgMap={};
-  os.forEach(o=>{const k=o.orgao||'Outros';orgMap[k]=(orgMap[k]||0)+Number(o.valor_os||0);});
-  const topOrg=Object.entries(orgMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  if(orgaoChartInst)orgaoChartInst.destroy();
-  orgaoChartInst=new Chart(document.getElementById('orgao-chart').getContext('2d'),{
-    type:'bar',
-    data:{labels:topOrg.map(x=>x[0]),datasets:[{data:topOrg.map(x=>x[1]),backgroundColor:'#D4A853',borderRadius:4,borderSkipped:false}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},
-      scales:{x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10},callback:v=>fmt(v)}},
-        y:{grid:{display:false},ticks:{color:tickColor,font:{size:10}}}}}
-  });
-}
 
 async function loadProp(f='todos'){allProp=await sGet('propostas');const list=f==='todos'?allProp:allProp.filter(p=>p.status===f);document.getElementById('prop-body').innerHTML=list.map(p=>`<tr><td><strong>${p.descricao}</strong></td><td style="color:var(--txt2)">${p.tipo}</td><td>${p.cliente}</td><td style="font-family:'DM Mono',monospace">${fmt(p.valor)}</td><td>${p.prazo||'--'}</td><td><span class="pill ${SP[p.status]||'p-gray'}">${p.status}</span></td><td><button class="btn btn-sm" onclick="editProp(${p.id})"><i class="ti ti-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="delProp(${p.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('')||'<tr><td colspan="7" class="loading">Nenhuma proposta</td></tr>';}
 async function loadCli(){allCli=await sGet('clientes');renderCli(allCli);}
